@@ -33,10 +33,82 @@ export default class implements Migration {
      * As a cinema owner I dont want to configure the seating for every show
      */
 
-    throw new Error('TODO: implement migration in task 4');
+    await prisma.$queryRaw`CREATE TABLE "user" (
+      "id"        INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      "firstName" TEXT NOT NULL,
+      "lastName"  TEXT NOT NULL,
+      "email"     TEXT NOT NULL,
+      "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )`;
+
+    await prisma.$queryRaw`CREATE TABLE "bookType" (
+      "id"          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      "typeName"    TEXT NOT NULL,
+      "createdAt"   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )`;
+
+    await prisma.$queryRaw`CREATE TABLE "seat" (
+      "id"          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      "name"        TEXT NOT NULL,
+      "bookTypeId"  INTEGER NOT NULL,
+      "createdAt"   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )`;
+
+    await prisma.$queryRaw`CREATE TABLE "showroom" (
+      "id"          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      "name"        TEXT NOT NULL,
+      "seatAmount"  INTERGER NOT NULL,
+      "createdAt"   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )`;
+
+    await prisma.$queryRaw`CREATE TABLE "showroomSeat" (
+      "id"          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      "showroomId"  INTERGER NOT NULL,
+      "seatId"      INTERGER NOT NULL,
+      "createdAt"   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )`;
+
+    await prisma.$queryRaw`CREATE TABLE "showtime" (
+      "id"          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      "start"       DATETIME NOT NULL,
+      "end"         DATETIME NOT NULL,
+      "showroomId"  INTEGER NOT NULL,
+      "createdAt"   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )`;
+
+    await prisma.$queryRaw`CREATE TABLE "cinema" (
+      "id"          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      "name"        TEXT NOT NULL,
+      "showtimeId"  INTEGER NOT NULL,
+      "createdAt"   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )`;
+
+    await prisma.$queryRaw`CREATE TABLE "cinemaPrice" (
+      "id"          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      "cinemaId"    INTEGER NOT NULL,
+      "seatId"      INTEGER NOT NULL,
+      "price"       INTEGER NOT NULL,
+      "createdAt"   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )`;
+
+    await prisma.$queryRaw`CREATE TABLE "cinemaBooked" (
+      "id"            INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      "cinemaPriceId" INTEGER NOT NULL,
+      "userId"        INTEGER NOT NULL,
+      "createdAt"     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )`;
+
   }
 
   async down(prisma: PrismaClient) {
-    // do nothing
+    await prisma.$queryRaw`DROP TABLE "user"`;
+    await prisma.$queryRaw`DROP TABLE "bookType"`;
+    await prisma.$queryRaw`DROP TABLE "seat"`;
+    await prisma.$queryRaw`DROP TABLE "showroom"`;
+    await prisma.$queryRaw`DROP TABLE "showroomSeat"`;
+    await prisma.$queryRaw`DROP TABLE "showtime"`;
+    await prisma.$queryRaw`DROP TABLE "cinema"`;
+    await prisma.$queryRaw`DROP TABLE "cinemaPrice"`;
+    await prisma.$queryRaw`DROP TABLE "cinemaBooked"`;
   }
 }
