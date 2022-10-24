@@ -5,9 +5,9 @@ export class EventsService {
 
   async getWarmupEvents() {
     const events = await this.app.getDataSource().event.findMany();
-    console.log('events', events)
+    // console.log('events', events)
     const workshops = await this.app.getDataSource().workshop.findMany();
-    console.log('workshops', workshops)
+    // console.log('workshops', workshops)
     return events;
   }
 
@@ -169,6 +169,27 @@ export class EventsService {
     ```
      */
   async getFutureEventWithWorkshops() {
-    throw new Error('TODO task 2');
+    const workshops = await this.app.getDataSource().workshop.findMany({
+      where: {
+        start: {
+          gte: new Date()
+        }
+      }
+    });
+    const events = await this.app.getDataSource().event.findMany({
+      where: {
+        id: {
+          in: workshops.map((w) => w.eventId)
+        }
+      }
+    });
+    const res = events.map((e) => {
+      const tmpWS = workshops.filter((w) => w.eventId == e.id)
+      return {
+        ...e,
+        workshops: tmpWS
+      }
+    })
+    return res;
   }
 }
