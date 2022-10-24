@@ -4,7 +4,11 @@ export class EventsService {
   constructor(protected app: App) {}
 
   async getWarmupEvents() {
-    return await this.app.getDataSource().event.findMany();
+    const events = await this.app.getDataSource().event.findMany();
+    console.log('events', events)
+    const workshops = await this.app.getDataSource().workshop.findMany();
+    console.log('workshops', workshops)
+    return events;
   }
 
   /* TODO: complete getEventsWithWorkshops so that it returns all events including the workshops
@@ -85,7 +89,17 @@ export class EventsService {
      */
 
   async getEventsWithWorkshops() {
-    throw new Error('TODO task 1');
+    const events = await this.app.getDataSource().event.findMany();
+    const workshops = await this.app.getDataSource().workshop.findMany();
+    const res = events.map((e) => {
+      const tmpWS = workshops.filter((w) => w.eventId == e.id)
+      return {
+        ...e,
+        workshops: tmpWS
+      }
+    })
+
+    return res;
   }
 
   /* TODO: complete getFutureEventWithWorkshops so that it returns events with workshops, that have not yet started
